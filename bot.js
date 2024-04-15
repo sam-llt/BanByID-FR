@@ -93,7 +93,9 @@ bot.command('list', (ctx) => {
         ctx.reply(`Liste des utilisateurs marqués comme Spam/Bot : ${bannedUsers.join(', ')}`);
       } else {
         ctx.reply(`Aucun utilisateur n'est marqué comme Spam/Bot.`);
-    } else {
+      }
+    }
+    else {
       ctx.reply(`Vous n'êtes pas autorisé à consulter la liste des utilisateurs bannis.`);
     }
   })
