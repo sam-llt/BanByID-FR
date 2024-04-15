@@ -32,14 +32,59 @@ bot.command('add', (ctx) => {
   isAdmin(ctx.message.chat.id, ctx.message.from.id, ctx).then((result) => {
     if (result) {
       const message = ctx.message;
-      const userId = message.reply_to_message.from.id;
+      try {
+        const userId = message.reply_to_message.from.id;
+      } catch (error) {
+        ctx.reply(`Aucune réponse trouvée. Cette commande s'utilise en réponse à un message.`);
+        return;
+      }
       if (!bannedUsers.includes(userId)) {
-        ctx.telegram.KickChatMember(message.chat.id, userId)
+        try {
+          ctx.telegram.KickChatMember(message.chat.id, userId)
+          ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} (${userId}) a été banni du groupe.`);
+        } catch (error) {
+          ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} (${userId}) n'a pas pu être banni du groupe.`);
+        }
         bannedUsers.push(userId);
-        fs.writeFileSync('spam-users-id.json', JSON.stringify(bannedUsers));
-        ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} a été ajouté à la liste des utilisateurs marqués comme Spam/Bot et a été banni du groupe.`);
+        try{
+          fs.writeFileSync('spam-users-id.json', JSON.stringify(bannedUsers));
+          ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} (${userId}) a été ajouté à la liste des utilisateurs marqués comme Spam/Bot.`);
+        } catch (error) {
+          ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} (${userId}) n'a pas pu être ajouté à la liste des utilisateurs marqués comme Spam/Bot.`);
+        }
       } else {
-        ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} a été ajouté à la liste des utilisateurs marqués comme Spam/Bot.`);
+        ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} (${userId}) est déjà dans la liste des utilisateurs marqués comme Spam/Bot.`);
+      }
+    } else {
+      ctx.reply(`Vous n'êtes pas autorisé à ajouter des utilisateurs à la liste des utilisateurs bannis.`);
+    }
+  })
+  .catch((error) => {
+    ctx.reply("Une erreur est survenue en essayant d'obtenir le statut de l'utilisateur : " + JSON.stringify(error));
+  });
+});
+
+bot.command('addid', (ctx) => {
+  isAdmin(ctx.message.chat.id, ctx.message.from.id, ctx).then((result) => {
+    if (result) {
+      const message = ctx.message;
+      const userId = ctx.args[0];
+      if (!bannedUsers.includes(userId)) {
+        try {
+          ctx.telegram.KickChatMember(message.chat.id, userId)
+          ctx.reply(`L'utilisateur ${userId} a été banni du groupe.`);
+        } catch (error) {
+          ctx.reply(`L'utilisateur ${userId} n'a pas pu être banni du groupe.`);
+        }
+        bannedUsers.push(userId);
+        try{
+          fs.writeFileSync('spam-users-id.json', JSON.stringify(bannedUsers));
+          ctx.reply(`L'utilisateur ${userId} a été ajouté à la liste des utilisateurs marqués comme Spam/Bot.`);
+        } catch (error) {
+          ctx.reply(`L'utilisateur ${userId} n'a pas pu être ajouté à la liste des utilisateurs marqués comme Spam/Bot.`);
+        }
+      } else {
+        ctx.reply(`L'utilisateur ${userId} est déjà dans la liste des utilisateurs marqués comme Spam/Bot.`);
       }
     } else {
       ctx.reply(`Vous n'êtes pas autorisé à ajouter des utilisateurs à la liste des utilisateurs bannis.`);
@@ -55,14 +100,14 @@ bot.command('deleteid', (ctx) => {
   isAdmin(ctx.message.chat.id, ctx.message.from.id, ctx).then((result) => {
     if (result) {
       const message = ctx.message;
-      const userId = message.reply_to_message.from.id;
+      const userId = ctx.args[0];
       const index = bannedUsers.indexOf(userId);
       if (index > -1) {
         bannedUsers.splice(index, 1);
         fs.writeFileSync('spam-users-id.json', JSON.stringify(bannedUsers));
-        ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} a été retiré de la liste des utilisateurs marqués comme Spam/Bot.`);
+        ctx.reply(`L'utilisateur ${userId} a été retiré de la liste des utilisateurs marqués comme Spam/Bot.`);
       } else {
-        ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} n'a pas été retiré de la liste des utilisateurs marqués comme Spam/Bot.`);
+        ctx.reply(`L'utilisateur ${userId} n'a pas été retiré de la liste des utilisateurs marqués comme Spam/Bot.`);
       }
     } else {
       ctx.reply(`Vous n'êtes pas autorisé à retirer des utilisateurs de la liste des utilisateurs bannis.`);
