@@ -21,12 +21,12 @@ bot.command('add', (ctx) => {
       ctx.telegram.KickChatMember(message.chat.id, userId)
       bannedUsers.push(userId);
       fs.writeFileSync('spam-users-id.json', JSON.stringify(bannedUsers));
-      ctx.reply(`O usuário ${message.reply_to_message.from.first_name} foi adicionado à lista de usuários marcados como Spam/Bot e foi banido do grupo.`);
+      ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} a été ajouté à la liste des utilisateurs marqués comme Spam/Bot et a été banni du groupe.`);
     } else {
-      ctx.reply(`O usuário ${message.reply_to_message.from.first_name} já está na lista de usuários marcados como Spam/Bot.`);
+      ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} a été ajouté à la liste des utilisateurs marqués comme Spam/Bot.`);
     }
   } else {
-    ctx.reply('Você não tem permissão para adicionar usuários na lista de usuários banidos.');
+    ctx.reply(`Vous n'êtes pas autorisé à ajouter des utilisateurs à la liste des utilisateurs bannis.`);
   }
 });
 
@@ -39,24 +39,24 @@ bot.command('deleteid', (ctx) => {
     if (index > -1) {
       bannedUsers.splice(index, 1);
       fs.writeFileSync('spam-users-id.json', JSON.stringify(bannedUsers));
-      ctx.reply(`O usuário ${message.reply_to_message.from.first_name} foi removido da lista de usuários marcados como Spam/Bot.`);
+      ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} a été retiré de la liste des utilisateurs marqués comme Spam/Bot.`);
     } else {
-      ctx.reply(`O usuário ${message.reply_to_message.from.first_name} não está na lista de usuários marcados como Spam/Bot.`);
+      ctx.reply(`L'utilisateur ${message.reply_to_message.from.first_name} n'a pas été retiré de la liste des utilisateurs marqués comme Spam/Bot.`);
     }
   } else {
-    ctx.reply('Você não tem permissão para remover usuários da lista de usuários banidos.');
+    ctx.reply(`Vous n'êtes pas autorisé à retirer des utilisateurs de la liste des utilisateurs bannis.`);
   }
 });
 
 bot.command('count', (ctx) => {
-  ctx.reply(`Existem ${bannedUsers.length} usuários na lista de usuários marcados como Spam/Bot.`);
+  ctx.reply(`La liste des utilisateurs marqués comme Spam/Bot contient ${bannedUsers.length} utilisateurs.`);
 });
 
 bot.command('list', (ctx) => {
   if (bannedUsers.length > 0) {
-      ctx.reply(`Lista de usuários marcados como Spam/Bot: ${bannedUsers.join(', ')}`);
+      ctx.reply(`Liste des utilisateurs marqués comme Spam/Bot : ${bannedUsers.join(', ')}`);
   } else {
-      ctx.reply(`Não há usuários marcados como Spam/Bot na lista.`);
+      ctx.reply(`Aucun utilisateur n'est marqué comme Spam/Bot.`);
   }
 });
 
@@ -65,18 +65,18 @@ bot.on('new_chat_members', (ctx) => {
   if (bannedUsers.includes(userId)) {
     ctx.telegram.kickChatMember(ctx.message.chat.id, userId);
     const userName = ctx.message.new_chat_participant.first_name;
-    ctx.reply(` O usuário ${userName}, foi banido pois está marcado como Spam/Bot. `);
+    ctx.reply(` L'utilisateur ${userName}, a été banni et a été marqué comme Spam/Bot.`);
   }
 });
 
 bot.catch((err) => {
-    console.log('Error:', err)
+    console.log('Erreur : ', err)
 });
 
 const startBot = async () => {
 	try {
 		await bot.launch();
-		console.log('✅ - BanByID iniciado com sucesso.');
+		console.log('✅ - BanByID-FR démarré avec succès.');
 	} catch(error) {
 		console.error(error);
 	}
